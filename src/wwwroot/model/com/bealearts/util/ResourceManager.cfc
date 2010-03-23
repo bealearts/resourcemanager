@@ -18,9 +18,11 @@
 	>
 		<cfargument name="resourcePackagePath" hint="Flex style Resource Package folder path" type="string" required="true" /> 
 		<cfargument name="baseLocale" hint="Base locale to fall back on if there are no matches for a particular key and locale" type="string" required="false" default="en_US" /> 
+		<cfargument name="propertiesEncoding" hint="File Encoding of Resource Bundle properties files" type="string" required="false" default="UTF-8" /> 
 
 		<cfset variables.resourcePackagePath = expandPath(arguments.resourcePackagePath) />
 		<cfset variables.baseLocale = arguments.baseLocale />
+		<cfset variables.propertiesEncoding = arguments.propertiesEncoding />
 
 		<cfreturn this />
 	</cffunction>
@@ -96,7 +98,11 @@
 		returntype="string" 
 		output="false" 
 	> 
-		<cfreturn getPageContext().getResponse().getLocale().getLanguage() & '_' & getPageContext().getResponse().getLocale().getCountry() />		
+		<cfif getPageContext().getResponse().getLocale().getCountry() eq '' >
+			<cfreturn getPageContext().getResponse().getLocale().getLanguage() />
+		<cfelse>	
+			<cfreturn getPageContext().getResponse().getLocale().getLanguage() & '_' & getPageContext().getResponse().getLocale().getCountry() />		
+		</cfif>
 	</cffunction>
 	
 	
@@ -140,6 +146,7 @@
 	<cfset variables.resourcePackagePath = '' />
 	<cfset variables.resourcePackage = structNew() />
 	<cfset variables.baseLocale = '' />
+	<cfset variables.propertiesEncoding = '' />
 	
 	
 	<cffunction name="getResourceBundle"
@@ -186,7 +193,7 @@
 				<cfif fileExists( variables.resourcePackagePath & '/' & currentLocale & '/' & arguments.resourceBundleName & '.properties' ) >
 	
 					<cfset propertyFile = createObject('java', 'java.util.Properties') />
-					<cfset propertyFile.load( createObject('java', 'java.io.FileInputStream').init( variables.resourcePackagePath & '/' & currentLocale & '/' & arguments.resourceBundleName & '.properties' ) ) />
+					<cfset propertyFile.load( createObject('java', 'java.io.InputStreamReader').init( createObject('java', 'java.io.FileInputStream').init( variables.resourcePackagePath & '/' & currentLocale & '/' & arguments.resourceBundleName & '.properties' ), variables.propertiesEncoding) ) />
 					
 					<!--- Load Properties --->
 					<cfset properties = propertyFile.propertyNames() />

@@ -41,7 +41,7 @@
 		<cfset setEncoding('form', 'utf-8') />		
 		
 		<!--- Make sure application is init --->	
-		<cfif not isDefined('application.init') >
+		<cfif not isDefined('application.init') or isDefined('url.reinit') >
 			<cfset onApplicationStart() />
 		</cfif>	
 		

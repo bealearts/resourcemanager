@@ -128,17 +128,36 @@
 		output="false" 
 	> 
 		<!--- LOCALS --->
-		<cfset locales = arrayNew(1) />
-		<cfset packages = queryNew('') />
+		<cfset var locales = arrayNew(1) />
+		<cfset var packages = queryNew('') />
 		
-		<cfdirectory action="list" name="packages" directory="#variables.resourcePackagePath#" />
+		<cfdirectory action="list" name="packages" directory="#variables.resourcePackagePath#" type="dir" listInfo="name" />
 		
 		<cfloop query="packages">
-			<cfset arrayAppend(locales, packages.name) />
+			<cfif left(packages.name, 1) neq '.' >
+				<cfset arrayAppend(locales, packages.name) />
+			</cfif>
 		</cfloop>
 		
 		<cfreturn locales />		
-	</cffunction>	
+	</cffunction>
+	
+	
+	<cffunction name="getLocaleDirection"
+		hint="Get language direction (rtl|rtl) for the locale code" 
+		access="public" 
+		returntype="string" 
+		output="false" 
+	> 
+		<cfargument name="locale" hint="Resource Locale" type="string" required="false" default="#this.getLocaleCode()#" />
+
+		<cfif createObject('java', 'java.awt.ComponentOrientation').getOrientation( createObject('java', 'java.util.Locale').init(arguments.locale) ).isLeftToRight() >
+			<cfreturn 'ltr' />
+		<cfelse>
+			<cfreturn 'rtl' />	
+		</cfif>
+		
+	</cffunction>		
 	
 	
 	<!--- PRIVATE --->

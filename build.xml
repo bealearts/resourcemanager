@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="ResourceManager" default="build">
+    <description>
+    	An internationalisation library for Adobe ColdFusion which uses the resource bundle package style that Adobe Flex uses.
+    </description>
+
+	<property file="project.properties"/>
+
+    <target name="init">
+    </target>
+
+	
+	<target name="clean" depends="init">
+	
+		<echo>Cleaning the ${build.dir}</echo>
+		<delete dir="${build.dir}"/>
+		
+	</target>
+	
+
+    <target name="build" depends="init,clean">
+		
+    	<echo>Copy Web Root Files</echo>
+		<copy todir="${build.dir}/" overwrite="true" >
+			<fileset dir="./src/wwwroot" />
+		</copy>
+    	
+	</target>
+
+	
+	<target name="distclean" depends="init">
+
+		<echo>Cleaning the ${dist.dir}</echo>
+		<delete dir="${dist.dir}"/>
+		
+	</target>
+	
+	
+    <target name="dist" depends="init,distclean,build">
+  
+    	<echo>Creating package ${dist.package} in ${dist.dir}</echo>
+    	<mkdir dir="${dist.dir}"/>
+    	<zip destfile="${dist.dir}/${dist.package}"
+    		basedir="${build.dir}"
+    	/>
+    	
+    </target>
+	
+</project>
